@@ -5,7 +5,7 @@ import os.path
 import sys
 import re
 
-REPO_BASE = "/users/git/repositories/"
+REPO_BASE = "/Users/git/repositories/"
 
 remotes = os.popen("git remote").read().split("\n")
 post_command = os.popen("git config hooks.post").read().strip()
@@ -15,15 +15,27 @@ clone_path = os.popen("git config hooks.clone.path").read().strip()
 mirrors = os.popen("git config --get-regexp mirrors.*").read().split("\n")
 
 for mirror in mirrors:
-    name, url = mirror.strip().split()
+    mirror = mirror.strip().replace("mirrors.", "")
+
+    parts = mirror.split()
+
+    if len(parts) == 0:
+        continue
+
+    name, url = parts
+
     if name not in remotes:
-        print "Creating %s remote" % name
-        cwd = os.getcwd().replace(REPO_BASE, '')
+        cwd = os.getcwd()
+        cwd = cwd.replace(REPO_BASE, '')
         url = url.replace("REPO_NAME", cwd)
-        os.popen("git remote add %s %s" % (cwd, url))
+        print "Creating %s remote for url %s" % (name,url)
+        os.popen("git remote add %s %s" % (name, url))
 
     sys.stderr.write("Pushing to %s" % name)
-    os.popen("/usr/bin/env GIT_DIR=. jgit push --all %s" % name).read()
+    if url.startswith("amazon-s3"):
+        os.popen("/usr/bin/env GIT_DIR=. jgit push --all %s" % name).read()
+    else:
+        os.popen("/usr/bin/env GIT_DIR=. git push --all %s" % name).read()
 
 git_dir = os.environ.pop('GIT_DIR')
 
