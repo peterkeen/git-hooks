@@ -63,5 +63,5 @@ for line in sys.stdin.readlines():
     old, new, ref = line.split()
     if post_command != "" and ref_filter.match(ref):
         sys.stderr.write("Running post-hook: %s\n" % post_command)
-        cmd = "env REV=#{new} APP=#{repo_name} #{post_command}"
+        cmd = "env REV=%s APP=%s %s" % (new, repo_name, post_command)
         os.system(cmd)
