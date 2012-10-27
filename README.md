@@ -24,6 +24,15 @@ repo named `mirror.<name>` with the value set to the remote URL.
       config mirrors.github = "git@github.com:example/testing.git"
       config mirrors.s3     = "amazon-s3://.jgit@bugsplat-git-repos/testing.git"
       config mirrors.other  = "user@example.com:example/testing.git"
+      
+To push to S3 you'll need to create a bucket on S3 and create a file in the gitolite
+user's home directory that contains your access key and secret key in this format:
+
+    accesskey: YOUR-AWS-ACCESS-KEY
+    secretkey: YOUR-AWS-SECRET-KEY
+    
+Your mirror URL will then be in the format `amazon-s3://<filename>@<s3-bucket-name>/<repo_name>.git`.
+In the example above, the key file is at `$GITOLITE_HOME/.jgit`.
 
 ### Maintain a local clone
 
@@ -39,3 +48,5 @@ changes made to this clone will be erased the next time you push.
 
 Copy `pre-receive` and `post-receive` to `$GITOLITE_HOME/.gitolite/hooks` and make sure they're executable.
 Copy `jgit` to `$GITOLITE_HOME/bin/jgit`.
+
+
