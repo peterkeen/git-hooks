@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+
+import os
+import os.path
+import sys
+import re
+
+pre_command = os.popen("git config hooks.pre").strip()
+ref_regex = os.popen("git config hooks.pre.filter").strip()
+
+if not pre_command:
+    exit(0)
+
+ref_filter = re.compile(ref_regex)
+repo_name = os.path.basename(os.environ.get('GL_REPO')).replace('.git', '')
+
+for line in sys.stdin.readlines():
+    old, new, ref = line.split()
+    if ref_filter.match(ref):
+        sys.stderr.write("Running pre-hook '%s' on '%s'\n" % (pre_command, ref))
+        cmd = "env REV=#{new} APP=#{repo_name} #{pre_command}"
+        os.system(cmd)

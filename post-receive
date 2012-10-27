@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+
+import os
+import os.path
+import sys
+import re
+
+REPO_BASE = "/users/git/repositories/"
+
+remotes = os.popen("git remote").read().split("\n")
+post_command = os.popen("git config hooks.post").read().strip()
+ref_regex = os.popen("git config hooks.post.filter").read().strip()
+clone_path = os.popen("git config hooks.clone.path").read().strip()
+
+mirrors = os.popen("git config --get-regexp mirrors.*").read().split("\n")
+
+for mirror in mirrors:
+    name, url = mirror.strip().split()
+    if name not in remotes:
+        print "Creating %s remote" % name
+        cwd = os.getcwd().replace(REPO_BASE, '')
+        url = url.replace("REPO_NAME", cwd)
+        os.popen("git remote add %s %s" % (cwd, url))
+
+    sys.stderr.write("Pushing to %s" % name)
+    os.popen("/usr/bin/env GIT_DIR=. jgit push --all %s" % name).read()
+
+git_dir = os.environ.pop('GIT_DIR')
+
+if clone_path != "":
+    sys.stderr.write("Updating clone at %s\n" % clone_path)
+    clone_branch = os.popen("git config hooks.clone.branch").read().strip() or "origin/master"
+    if not os.path.exists(clone_path):
+        sys.stderr.write("Creating clone\n")
+        os.system("git clone %s %s" % (git_dir, clone_path))
+    os.chdir(clone_path)
+    sys.stderr.write("Fetching...\n")
+    os.system("git fetch origin")
+    sys.stderr.write("Resetting...\n")
+    os.system("git reset --hard HEAD")
+    sys.stderr.write("Checking out branch %s...\n" % clone_branch)
+    os.system("git checkout %s" % clone_branch)
+
+os.chdir(git_dir)
+os.environ['GIT_DIR'] = git_dir
+
+repo_name = os.path.basename(os.environ.get('GL_REPO')).replace('.git', '')
+ref_filter = re.compile(ref_regex)
+
+for line in sys.stdin.readlines():
+    old, new, ref = line.split()
+    if post_command != "" and ref_filter.match(ref):
+        sys.stderr.write("Running post-hook: %s\n" % post_command)
+        cmd = "env REV=#{new} APP=#{repo_name} #{post_command}"
+        os.system(cmd)
