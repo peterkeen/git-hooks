@@ -48,4 +48,3 @@ changes made to this clone will be erased the next time you push.
 
 Copy `pre-receive` and `post-receive` to `$GITOLITE_HOME/.gitolite/hooks/common` and make sure they're executable.
 Copy `jgit` to `$GITOLITE_HOME/bin/jgit`.
-
