@@ -5,8 +5,8 @@ import os.path
 import sys
 import re
 
-pre_command = os.popen("git config hooks.pre").strip()
-ref_regex = os.popen("git config hooks.pre.filter").strip()
+pre_command = os.popen("git config hooks.pre").read().strip()
+ref_regex = os.popen("git config hooks.pre.filter").read().strip()
 
 if not pre_command:
     exit(0)
