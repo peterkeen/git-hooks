@@ -28,10 +28,10 @@ for mirror in mirrors:
         cwd = os.getcwd()
         cwd = cwd.replace(REPO_BASE, '')
         url = url.replace("REPO_NAME", cwd)
-        print "Creating %s remote for url %s" % (name,url)
+        sys.stderr.write("Creating %s remote for url %s\n" % (name,url))
         os.popen("git remote add %s %s" % (name, url))
 
-    sys.stderr.write("Pushing to %s" % name)
+    sys.stderr.write("Pushing to %s\n" % name)
     if url.startswith("amazon-s3"):
         os.popen("/usr/bin/env GIT_DIR=. jgit push --all %s" % name).read()
     else:
