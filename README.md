@@ -3,7 +3,7 @@ Git Hooks
 
 This is a pair of git hooks that I use on my gitolite server that facilitate a few interesting things:
 
-### Repository-specific pre- and post-receive hooks`
+### Repository-specific pre- and post-receive hooks
 
 You can embed little scripts inside the config, specific to each repo. Each script will be invoked once for
 every branch with an optional regex filter. For example:
@@ -47,6 +47,5 @@ changes made to this clone will be erased the next time you push.
 ## Install
 
 Copy `pre-receive` and `post-receive` to `$GITOLITE_HOME/.gitolite/hooks/common` and make sure they're executable.
-Copy `jgit` to `$GITOLITE_HOME/bin/jgit`.
-
-
+Copy `jgit` to `$GITOLITE_HOME/bin/jgit`. Customize the constant `REPO_BASE` at the top of `post-receive` to point
+the correct location for your system.
