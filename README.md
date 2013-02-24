@@ -37,7 +37,7 @@ In the example above, the key file is at `$GITOLITE_HOME/.jgit`.
 ### Maintain a local clone
 
 Sometimes it's really useful to have a local clone of a particular repository. These hooks let you do that
-by setting a config entry named `hooks.clone.bath` to the path where the clone should exist. Note that any
+by setting a config entry named `hooks.clone.path` to the path where the clone should exist. Note that any
 changes made to this clone will be erased the next time you push.
 
     repo testing
